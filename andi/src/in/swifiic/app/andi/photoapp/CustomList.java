@@ -1,5 +1,6 @@
 package in.swifiic.app.andi.photoapp;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,9 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 
+@SuppressLint("ViewHolder")
 public class CustomList extends ArrayAdapter<String> {
 	private final Activity context;
 	private final Integer[] imageId;
@@ -22,6 +22,7 @@ public class CustomList extends ArrayAdapter<String> {
 		this.liked = liked;
 	}
 
+	@SuppressLint("InflateParams")
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
 		LayoutInflater inflater = context.getLayoutInflater();

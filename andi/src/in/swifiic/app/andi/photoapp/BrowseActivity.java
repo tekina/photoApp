@@ -71,15 +71,19 @@ public class BrowseActivity extends ListActivity {
 	String mCurrentPhotoPath;
 
 	private File createImageFile() throws IOException {
+		File storageDir = getExternalFilesDir(null);
+		// Create uploads Directory
+		File uploadDir = new File(storageDir.getAbsolutePath() + "/uploads/");
+		if(!uploadDir.isDirectory()) {
+			uploadDir.mkdir();
+		}
 	    // Create an image file name
 	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 	    String imageFileName = "JPEG_" + timeStamp + "_";
-	    File storageDir = getExternalFilesDir(null);
-//	            Environment.DIRECTORY_PICTURES);
 	    File image = File.createTempFile(
 	        imageFileName,  /* prefix */
 	        ".jpg",         /* suffix */
-	        storageDir      /* directory */
+	        uploadDir      /* directory */
 	    );
 
 	    // Save a file: path for use with ACTION_VIEW intents
