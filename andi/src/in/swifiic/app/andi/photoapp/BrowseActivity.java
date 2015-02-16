@@ -16,8 +16,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,29 +23,34 @@ import android.widget.Toast;
 public class BrowseActivity extends ListActivity {
 
 	ListView list;
-	String[] desc = { "1", "Two", "3", "Four", "Five" };
-	Integer[] imageId = { R.drawable.img1, R.drawable.img2, R.drawable.img3,
-			R.drawable.img4, R.drawable.img5 };
-	Integer[] liked = { 0, 1, 3, 0, 1 };
-
+	String[] imgPath;
+	String[] usrInfo;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_browse);
 
-		CustomList adapter = new CustomList(BrowseActivity.this, imageId, desc,
-				liked);
-		list = getListView();// (ListView) findViewById(R.id.list);
-		list.setAdapter(adapter);
-		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Toast.makeText(BrowseActivity.this,
-						"You Clicked at position " + position,
-						Toast.LENGTH_SHORT).show();
-			}
-		});
+		File file = new File(getExternalFilesDir(null).getAbsolutePath() + "/uploads");
+		File[] listFile;
+        if (file.isDirectory())
+        {
+            listFile = file.listFiles();
+            imgPath = new String[listFile.length];
+            usrInfo = new String[listFile.length];
+            for (int i = 0; i < listFile.length; i++) {
+                imgPath[i] = listFile[i].getAbsolutePath();
+            	usrInfo[i] = "<Username>";
+            }
+        }
+
+        list = getListView();//(ListView) findViewById(R.id.list);
+        final CustomList adapter = new CustomList(this, imgPath);
+        list.setAdapter(adapter);
+//        list.post(new Runnable() {
+//            public void run() {
+//                list.setAdapter(adapter);
+//            }
+//        });		
 	}
 
 	@Override

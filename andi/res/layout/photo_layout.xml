@@ -3,11 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="${relativePackage}.${activityClass}" >
-
+    
     	<ImageView
-    	    android:id="@+id/img"
+    	    android:id="@+id/imgView"
     	    android:layout_width="match_parent"
-    	    android:layout_height="match_parent"
+    	    android:layout_height="wrap_content"
     	    android:layout_alignParentTop="true"
     	    android:contentDescription="@string/hello_world"
     	    android:alpha="1"
