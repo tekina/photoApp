@@ -8,15 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-@SuppressLint("ViewHolder")
 public class CustomList extends ArrayAdapter<String> {
 	private final Activity context;
 	private final String[] imgPath;
-	
+	private LayoutInflater mInflater;
+
 	public CustomList(Activity context, String[] imgPath) {
 		super(context, R.layout.photo_layout, imgPath);
 		this.context = context;
@@ -26,17 +23,19 @@ public class CustomList extends ArrayAdapter<String> {
 	@SuppressLint("InflateParams")
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
-		LayoutInflater inflater = context.getLayoutInflater();
-		View rowView = inflater.inflate(R.layout.photo_layout, null, true);
-		
-		ImageButton imgBtn = (ImageButton) rowView.findViewById(R.id.likeButton);
-		ImageView imageView = (ImageView) rowView.findViewById(R.id.imgView);
+		ImageHolder holder = null;
+		mInflater = context.getLayoutInflater();
+		if (view == null) {
+			view = mInflater.inflate(R.layout.photo_layout, null);
+			holder = new ImageHolder(view);
+			view.setTag(holder);
+		} else {
+			holder = (ImageHolder) view.getTag();
+		}
 
 		Bitmap imgBitmap = BitmapFactory.decodeFile(imgPath[position]);
-		imageView.setImageBitmap(imgBitmap);
-//		imageView.setImageResource(imageList[position]);
-			imgBtn.setImageResource(android.R.drawable.star_big_on);
-//			imgBtn.setImageResource(android.R.drawable.star_big_off);
-		return rowView;
+		holder.imgView.setImageBitmap(imgBitmap);
+		holder.imgBtn.setImageResource(android.R.drawable.star_big_on);
+		return view;
 	}
 }
