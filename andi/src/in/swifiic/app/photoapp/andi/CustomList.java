@@ -1,4 +1,4 @@
-package in.swifiic.app.andi.photoapp;
+package in.swifiic.app.photoapp.andi;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

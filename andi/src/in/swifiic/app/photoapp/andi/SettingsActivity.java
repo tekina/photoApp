@@ -1,4 +1,4 @@
-package in.swifiic.app.andi.photoapp;
+package in.swifiic.app.photoapp.andi;
 
 import android.app.Activity;
 import android.os.Bundle;

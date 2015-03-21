@@ -1,4 +1,7 @@
-package in.swifiic.app.andi.photoapp;
+package in.swifiic.app.photoapp.andi;
+
+import in.swifiic.plat.helper.andi.Helper;
+import in.swifiic.plat.helper.andi.xml.Action;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,11 +12,14 @@ import java.util.Date;
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -25,32 +31,34 @@ public class BrowseActivity extends ListActivity {
 	ListView list;
 	String[] imgPath;
 	String[] usrInfo;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_browse);
 
-		File file = new File(getExternalFilesDir(null).getAbsolutePath() + "/uploads");
+		File file = new File(getExternalFilesDir(null).getAbsolutePath()
+				+ "/uploads");
 		File[] listFile;
-        if (file.isDirectory())
-        {
-            listFile = file.listFiles();
-            imgPath = new String[listFile.length];
-            usrInfo = new String[listFile.length];
-            for (int i = 0; i < listFile.length; i++) {
-                imgPath[i] = listFile[i].getAbsolutePath();
-            	usrInfo[i] = "<Username>";
-            }
-        }
+		if (!file.isDirectory()) {
+			file.mkdirs();
+		}
+		listFile = file.listFiles();
+		imgPath = new String[listFile.length];
+		usrInfo = new String[listFile.length];
+		for (int i = 0; i < listFile.length; i++) {
+			imgPath[i] = listFile[i].getAbsolutePath();
+			usrInfo[i] = "<Username>";
+		}
 
-        list = getListView();//(ListView) findViewById(R.id.list);
-        final CustomList adapter = new CustomList(this, imgPath);
-        list.setAdapter(adapter);
-//        list.post(new Runnable() {
-//            public void run() {
-//                list.setAdapter(adapter);
-//            }
-//        });		
+		list = getListView();// (ListView) findViewById(R.id.list);
+		final CustomList adapter = new CustomList(this, imgPath);
+		list.setAdapter(adapter);
+		// list.post(new Runnable() {
+		// public void run() {
+		// list.setAdapter(adapter);
+		// }
+		// });
 	}
 
 	@Override
@@ -85,8 +93,7 @@ public class BrowseActivity extends ListActivity {
 		if (temp)
 			uploadDir = new File(storageDir.getAbsolutePath() + "/temp/");
 		else
-			uploadDir = new File(storageDir.getAbsolutePath()
-					+ "/uploads/");
+			uploadDir = new File(storageDir.getAbsolutePath() + "/uploads/");
 		if (!uploadDir.isDirectory()) {
 			uploadDir.mkdirs();
 		}
@@ -142,7 +149,7 @@ public class BrowseActivity extends ListActivity {
 				if (photoFile != null) {
 					try {
 						FileOutputStream fOut = new FileOutputStream(photoFile);
-						photo.compress(Bitmap.CompressFormat.JPEG, 25, fOut);
+						photo.compress(Bitmap.CompressFormat.JPEG, 10, fOut);
 						fOut.flush();
 						fOut.close();
 						// delete tmp file
@@ -161,11 +168,24 @@ public class BrowseActivity extends ListActivity {
 						"Image saved!\nWidth: " + photo.getWidth()
 								+ "\nHeight: " + photo.getHeight(),
 						Toast.LENGTH_LONG).show();
+				// XXX
+				SharedPreferences sharedPref = PreferenceManager
+						.getDefaultSharedPreferences(getBaseContext());
+				Log.d("PhotoUpload", "Sending file :" + mCurrentPhotoPath);
+				Action act = new Action("UploadPhoto", Constants.aeCtx);
+				act.addArgument("fromUser", "aniket-motoG");
+				act.addArgument("imageString",
+						Helper.fileToB64String(mCurrentPhotoPath));
+				String hubAddress = sharedPref.getString("hub_address",
+						"dtn://aniket-dell");
+				Helper.sendAction(act, hubAddress + Constants.hubEndpoint,
+						list.getContext());
 			} else if (resultCode == RESULT_CANCELED) {
 				// User cancelled the image capture
 			} else {
 				// Image capture failed, advise user
-				Toast.makeText(this, "Oops! Something went wrong.",
+				Toast.makeText(this,
+						"Oops! Something went wrong. Please try again.",
 						Toast.LENGTH_SHORT).show();
 			}
 		}
