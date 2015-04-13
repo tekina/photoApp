@@ -89,7 +89,7 @@ public class PhotoApp extends Base implements SwifiicHandler {
 					String imgB64Str[] = new String[ROWS];
 					ResultSet result;
 					try {
-						// add image to DB
+						// get images from DB
 						statement = connection.createStatement();
 						sql = "(SELECT * FROM Photoapp_Uploads ORDER BY id DESC LIMIT "
 								+ ROWS + ") ORDER BY id ASC;";
@@ -111,11 +111,11 @@ public class PhotoApp extends Base implements SwifiicHandler {
 					}
 					Notification notif = new Notification("PhotosBroadcast",
 							"PhotoApp", "2", "0.1", "Hub");
+					notif.addArgument("count", Integer.toString(ROWS));
 					for (int i = 0; i < ROWS; i++) {
-						notif.addArgument("path" + i, imgB64Str[i]);
-						System.out.println("path" + i);
+						notif.addArgument("img" + i, imgB64Str[i]);
 					}
-					
+
 					String payload = Helper.serializeNotification(notif);
 					photoApp.sendGrp("dtn://in.swifiic.app.photoapp.andi/mc",
 							payload);
@@ -173,15 +173,8 @@ public class PhotoApp extends Base implements SwifiicHandler {
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
-
-						// toUsers = new String[1];
-						// toUsers[0] = action.getArgument("toTeacher");
-
 					} else if (action.getOperationName().equalsIgnoreCase(
 							"UpvotePhoto")) {
-						// notif.updateNotificatioName("DeliverQuestions");
-						// String userList = action.getArgument("students");
-						// toUsers = userList.split("\\|");
 					} else {
 						logger.log(Level.SEVERE,
 								"Invalid argument " + action.getOperationName());

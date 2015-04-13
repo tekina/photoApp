@@ -31,19 +31,29 @@ public class BrowseActivity extends ListActivity {
 	ListView list;
 	String[] imgPath;
 	String[] usrInfo;
+	String recdFilePath;
+	final String recdFiles = recdFilePath;
+	File uploadFile, recdFile;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_browse);
-
-		File file = new File(getExternalFilesDir(null).getAbsolutePath()
-				+ "/uploads");
+		recdFilePath = getExternalFilesDir(null).getAbsolutePath()
+				+ "/received/";
+		uploadFile = new File(getExternalFilesDir(null).getAbsolutePath()
+				+ "/uploads/");
 		File[] listFile;
-		if (!file.isDirectory()) {
-			file.mkdirs();
+		if (!uploadFile.isDirectory()) {
+			uploadFile.mkdirs();
 		}
-		listFile = file.listFiles();
+		recdFile = new File(getExternalFilesDir(null).getAbsolutePath()
+				+ "/received/");
+		if (!recdFile.isDirectory()) {
+			recdFile.mkdirs();
+		}
+
+		listFile = recdFile.listFiles();
 		imgPath = new String[listFile.length];
 		usrInfo = new String[listFile.length];
 		for (int i = 0; i < listFile.length; i++) {
@@ -54,11 +64,6 @@ public class BrowseActivity extends ListActivity {
 		list = getListView();// (ListView) findViewById(R.id.list);
 		final CustomList adapter = new CustomList(this, imgPath);
 		list.setAdapter(adapter);
-		// list.post(new Runnable() {
-		// public void run() {
-		// list.setAdapter(adapter);
-		// }
-		// });
 	}
 
 	@Override
@@ -190,5 +195,4 @@ public class BrowseActivity extends ListActivity {
 			}
 		}
 	}
-
 }
