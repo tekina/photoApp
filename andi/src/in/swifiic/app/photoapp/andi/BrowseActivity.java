@@ -176,13 +176,13 @@ public class BrowseActivity extends ListActivity {
 				// XXX
 				SharedPreferences sharedPref = PreferenceManager
 						.getDefaultSharedPreferences(getBaseContext());
+				String fromUser = sharedPref.getString("my_identity", "anon");
+				String hubAddress = sharedPref.getString("hub_address", "");
 				Log.d("PhotoUpload", "Sending file :" + mCurrentPhotoPath);
 				Action act = new Action("UploadPhoto", Constants.aeCtx);
-				act.addArgument("fromUser", "aniket-motoG");
+				act.addArgument("fromUser", fromUser);
 				act.addArgument("imageString",
 						Helper.fileToB64String(mCurrentPhotoPath));
-				String hubAddress = sharedPref.getString("hub_address",
-						"dtn://aniket-dell");
 				Helper.sendAction(act, hubAddress + Constants.hubEndpoint,
 						list.getContext());
 			} else if (resultCode == RESULT_CANCELED) {
