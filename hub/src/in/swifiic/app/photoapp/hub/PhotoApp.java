@@ -31,8 +31,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.mysql.jdbc.Blob;
-
 public class PhotoApp extends Base implements SwifiicHandler {
 
 	private static final Logger logger = LogManager.getLogManager().getLogger(
@@ -53,7 +51,6 @@ public class PhotoApp extends Base implements SwifiicHandler {
 
 	static boolean exitFlag = false;
 
-	@SuppressWarnings("null")
 	public static void main(String args[]) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		PhotoApp photoApp = new PhotoApp();
@@ -87,6 +84,8 @@ public class PhotoApp extends Base implements SwifiicHandler {
 					Statement statement;
 					String sql;
 					String imgB64Str[] = new String[ROWS];
+					int imgId[] = new int[ROWS];
+					int imgUpvotes[] = new int[ROWS];
 					ResultSet result;
 					try {
 						// get images from DB
@@ -99,6 +98,10 @@ public class PhotoApp extends Base implements SwifiicHandler {
 						while (result.next()) {
 							// Retrieve by column name
 							String path = result.getString("path");
+							int id = result.getInt("id");
+							int upvotes = result.getInt("upvotes");
+							imgId[i] = id;
+							imgUpvotes[i] = upvotes;
 							imgB64Str[i] = fileToBase64(path);
 							i++;
 						}
@@ -114,6 +117,8 @@ public class PhotoApp extends Base implements SwifiicHandler {
 					notif.addArgument("count", Integer.toString(ROWS));
 					for (int i = 0; i < ROWS; i++) {
 						notif.addArgument("img" + i, imgB64Str[i]);
+						notif.addArgument("img_id" + i, Integer.toString(imgId[i]));
+						notif.addArgument("img_upvotes" + i, Integer.toString(imgUpvotes[i]));
 					}
 
 					String payload = Helper.serializeNotification(notif);
@@ -136,6 +141,7 @@ public class PhotoApp extends Base implements SwifiicHandler {
 			public void run() {
 				try {
 					Action action = Helper.parseAction(message);
+					@SuppressWarnings("unused")
 					Notification notif = new Notification(action);
 					String imgString, fromUser;
 					if (action.getOperationName().equalsIgnoreCase(

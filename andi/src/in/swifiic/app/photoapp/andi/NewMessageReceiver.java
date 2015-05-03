@@ -11,7 +11,6 @@ import java.util.Locale;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
 import android.util.Log;
 
 public class NewMessageReceiver extends BroadcastReceiver {
@@ -35,22 +34,28 @@ public class NewMessageReceiver extends BroadcastReceiver {
 	protected void handleNotification(Notification notif, Context context) {
 		if (notif.getNotificationName().equals("PhotosBroadcast")) {
 			ROWS = Integer.parseInt(notif.getArgument("count"));
-			// TODO get image, save it to storage and display it in app
+			// XXX get image, save it to storage and display it in app
 			for(int i = 0; i < ROWS; i++) {
 				String img = notif.getArgument("img" + i);
-				Log.w(TAG, "Got img string as: " + img);
-				saveFile(context, img, "img" + i);
-				}
+				int imgId = Integer.parseInt(notif.getArgument("img_id" + i));
+				int imgUpvotes = Integer.parseInt(notif.getArgument("img_upvotes" + i));
+				Log.w(TAG, "Got img with ID: " + imgId);
+				saveFile(context, img, imgId, imgUpvotes);
+				} 
 		}
 	}
 	
-	protected boolean saveFile(Context context, String imgString, String imgVal) {
+	protected boolean saveFile(Context context, String imgString, int imgId, int upvotes) {
 		DateFormat df = new SimpleDateFormat("yyMMddHHmmss", Locale.getDefault());
 		String sdt = df.format(new Date(System
 				.currentTimeMillis()));
 //		String state = Environment.getExternalStorageState();
-		String path = context.getExternalFilesDir(null).getAbsolutePath() + "/received/" + imgVal + "_" + sdt + ".jpg";//Environment.get"/sdcard/Android/data/in.swifiic.app.photoapp.andi/files/received/";
+		String imgName = imgId + "_" + sdt + ".jpg";
+		String path = context.getExternalFilesDir(null).getAbsolutePath() + "/received/" + imgName;//"/sdcard/Android/data/in.swifiic.app.photoapp.andi/files/received/";
 		Helper.b64StringToFile(imgString, path );
+		PhotoDB photoDB = new PhotoDB(context);
+		photoDB.getWritableDatabase();
+		photoDB.insertRow(context, imgId, imgName, upvotes);
 		return true;
 	}
 }
