@@ -181,6 +181,8 @@ public class PhotoApp extends Base implements SwifiicHandler {
 						}
 					} else if (action.getOperationName().equalsIgnoreCase(
 							"UpvotePhoto")) {
+						String imgId = action.getArgument("img_id");
+						System.out.println("!!!!Upvote for: " + imgId);
 					} else {
 						logger.log(Level.SEVERE,
 								"Invalid argument " + action.getOperationName());

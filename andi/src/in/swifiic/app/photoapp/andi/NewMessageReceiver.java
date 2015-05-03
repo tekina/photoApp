@@ -49,14 +49,17 @@ public class NewMessageReceiver extends BroadcastReceiver {
 		DateFormat df = new SimpleDateFormat("yyMMddHHmmss", Locale.getDefault());
 		String sdt = df.format(new Date(System
 				.currentTimeMillis()));
-//		String state = Environment.getExternalStorageState();
-		String imgName = imgId + "_" + sdt + ".jpg";
-		String path = context.getExternalFilesDir(null).getAbsolutePath() + "/received/" + imgName;//"/sdcard/Android/data/in.swifiic.app.photoapp.andi/files/received/";
-		Helper.b64StringToFile(imgString, path );
 		PhotoDB photoDB = new PhotoDB(context);
-		photoDB.getWritableDatabase();
-		photoDB.insertRow(context, imgId, imgName, upvotes);
-		return true;
+		if(!photoDB.getId(imgId)){
+//			String state = Environment.getExternalStorageState();
+			String imgName = imgId + "_" + sdt + ".jpg";
+			String path = context.getExternalFilesDir(null).getAbsolutePath() + "/received/" + imgName;//"/sdcard/Android/data/in.swifiic.app.photoapp.andi/files/received/";
+			Helper.b64StringToFile(imgString, path );
+			photoDB.insertRow(context, imgId, imgName, 0);
+			return true;
+		}
+		else
+			return false;
 	}
 }
  

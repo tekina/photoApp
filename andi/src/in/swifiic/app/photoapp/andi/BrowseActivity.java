@@ -29,6 +29,7 @@ import android.widget.Toast;
 public class BrowseActivity extends ListActivity {
 
 	ListView list;
+	int[] imgId;
 	String[] imgPath;
 	String[] usrInfo;
 	String recdFilePath;
@@ -55,15 +56,19 @@ public class BrowseActivity extends ListActivity {
 
 		listFile = recdFile.listFiles();
 		imgPath = new String[listFile.length];
+		imgId = new int[listFile.length];
 		usrInfo = new String[listFile.length];
 		for (int i = 0; i < listFile.length; i++) {
 			imgPath[i] = listFile[i].getAbsolutePath();
+			String fileName = listFile[i].getName();
+			imgId[i] = Integer.parseInt(fileName.substring(0,fileName.indexOf("_")));
 			usrInfo[i] = "<Username>";
 		}
 
 		list = getListView();// (ListView) findViewById(R.id.list);
-		final CustomList adapter = new CustomList(this, imgPath);
+		final CustomList adapter = new CustomList(this, imgPath, imgId);
 		list.setAdapter(adapter);
+		
 	}
 
 	@Override

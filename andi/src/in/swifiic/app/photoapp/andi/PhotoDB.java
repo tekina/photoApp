@@ -2,6 +2,7 @@ package in.swifiic.app.photoapp.andi;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -11,7 +12,7 @@ import android.util.Log;
 
 public class PhotoDB extends SQLiteOpenHelper {
 
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	private static final String DATABASE_NAME = "photoapp.db";
 	private static final String TABLE_PHOTOAPP = "photoapp";
 	public static final String COLUMN_ID = "_id";
@@ -24,7 +25,7 @@ public class PhotoDB extends SQLiteOpenHelper {
 			+ COLUMN_ID
 			+ " INTEGER PRIMARY KEY AUTOINCREMENT, "
 			+ COLUMN_SERVER_ID
-			+ " INT NOT NULL, "
+			+ " INT NOT NULL UNIQUE, "
 			+ COLUMN_IMG_NAME
 			+ " STRING NOT NULL, "
 			+ COLUMN_UPVOTE + " INT DEFAULT 0);";
@@ -63,6 +64,19 @@ public class PhotoDB extends SQLiteOpenHelper {
 		db.insertOrThrow(TABLE_PHOTOAPP, null, vals);
 		Log.d("DB_INFO", "New row added");
 		db.close();
+	}
+	
+	public boolean getId(int imgId) {
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_PHOTOAPP + " WHERE " + COLUMN_SERVER_ID + " = " + imgId, null);
+		boolean hasObject = false;
+	    if(cursor.moveToFirst()){
+	    	//record exists; user already has the same image
+	        hasObject = true;
+	    }
+		cursor.close();
+		db.close();
+		return hasObject;
 	}
 
 }
