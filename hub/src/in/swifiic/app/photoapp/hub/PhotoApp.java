@@ -172,7 +172,7 @@ public class PhotoApp extends Base implements SwifiicHandler {
 							sql = "INSERT INTO Photoapp_Uploads(user, path) VALUES (\""
 									+ fromUser + "\", \"" + file_path + "\")";
 							statement.executeUpdate(sql);
-							System.out.println("done.");
+							System.out.println("Upload done.");
 							statement.close();
 							// close connection to DB
 							DatabaseHelper.closeDB(connection);
@@ -181,8 +181,24 @@ public class PhotoApp extends Base implements SwifiicHandler {
 						}
 					} else if (action.getOperationName().equalsIgnoreCase(
 							"UpvotePhoto")) {
-						String imgId = action.getArgument("img_id");
+						int imgId = Integer.parseInt(action.getArgument("img_id"));
 						System.out.println("!!!!Upvote for: " + imgId);
+						// open connection to DB
+						Connection connection = DatabaseHelper.connectToDB();
+						Statement statement;
+						String sql;
+						try {
+							// add image to DB
+							statement = connection.createStatement();
+							sql = "UPDATE Photoapp_Uploads SET upvotes = upvotes + 1 WHERE id = " + imgId;
+							statement.executeUpdate(sql);
+							System.out.println("Upvote done.");
+							statement.close();
+							// close connection to DB
+							DatabaseHelper.closeDB(connection);
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
 					} else {
 						logger.log(Level.SEVERE,
 								"Invalid argument " + action.getOperationName());
