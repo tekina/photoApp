@@ -66,7 +66,7 @@ public class PhotoDB extends SQLiteOpenHelper {
 		db.close();
 	}
 	
-	public boolean getId(int imgId) {
+	public boolean checkImgId(int imgId) {
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_PHOTOAPP + " WHERE " + COLUMN_SERVER_ID + " = " + imgId, null);
 		boolean hasObject = false;
@@ -77,6 +77,28 @@ public class PhotoDB extends SQLiteOpenHelper {
 		cursor.close();
 		db.close();
 		return hasObject;
+	}
+	
+	public int getUpvotes(int imgId) {
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cursor = db.rawQuery("SELECT " + COLUMN_UPVOTE + " FROM " + TABLE_PHOTOAPP + " WHERE " + COLUMN_SERVER_ID + " = " + imgId, null);
+	    int upvote = -1;
+		if(!cursor.moveToFirst()){
+	    	//record does not exist; malfunction
+	    } else {
+	    	upvote = cursor.getInt(0);
+	    }
+		cursor.close();
+		db.close();
+		return upvote;
+	}
+	
+	public void setUpvotes(int imgId) {
+		SQLiteDatabase db = getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(COLUMN_UPVOTE, 1);
+		db.update(TABLE_PHOTOAPP, values, COLUMN_SERVER_ID + " = " + imgId, null);
+		db.close();
 	}
 
 }

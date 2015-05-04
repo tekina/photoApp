@@ -50,7 +50,7 @@ public class NewMessageReceiver extends BroadcastReceiver {
 		String sdt = df.format(new Date(System
 				.currentTimeMillis()));
 		PhotoDB photoDB = new PhotoDB(context);
-		if(!photoDB.getId(imgId)){
+		if(!photoDB.checkImgId(imgId)){
 //			String state = Environment.getExternalStorageState();
 			String imgName = imgId + "_" + sdt + ".jpg";
 			String path = context.getExternalFilesDir(null).getAbsolutePath() + "/received/" + imgName;//"/sdcard/Android/data/in.swifiic.app.photoapp.andi/files/received/";

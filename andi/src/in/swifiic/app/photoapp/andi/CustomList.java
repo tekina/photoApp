@@ -18,7 +18,8 @@ import android.widget.Toast;
 public class CustomList extends ArrayAdapter<String> {
 	private final Activity context;
 	private final String[] imgPath;
-	private final int[] imgId; 
+	private final int[] imgId;
+	private boolean[] upvoted;
 	private LayoutInflater mInflater;
 
 	public CustomList(Activity context, String[] imgPath, int[] imgId) {
@@ -26,6 +27,8 @@ public class CustomList extends ArrayAdapter<String> {
 		this.context = context;
 		this.imgPath = imgPath;
 		this.imgId = imgId;
+		int size = imgId.length;
+		upvoted = new boolean[size];
 	}
 
 	@SuppressLint("InflateParams")
@@ -43,19 +46,33 @@ public class CustomList extends ArrayAdapter<String> {
 
 		Bitmap imgBitmap = BitmapFactory.decodeFile(imgPath[position]);
 		holder.imgView.setImageBitmap(imgBitmap);
-		holder.imgBtn.setImageResource(android.R.drawable.star_big_off);
+		PhotoDB db = new PhotoDB(context);
+		int upvote = db.getUpvotes(imgId[position]);
+		if(upvote == 0) {
+			holder.imgBtn.setImageResource(android.R.drawable.star_big_off);
+			upvoted[position] = false;
+		}
+		else {
+			holder.imgBtn.setImageResource(android.R.drawable.star_big_on);
+			upvoted[position] = true;
+		}
 		
-//		ImageButton likeBtn = (ImageButton) root.findViewById(R.id.likeButton);
+//		ImageButton likeBtn = (ImageButton) findViewById(R.id.likeButton);
 		final int id = imgId[position];
+		final boolean voted = upvoted[position];
+		final ImageHolder imgHolder = holder;
 		holder.imgBtn.setOnClickListener(new View.OnClickListener() {
 		  @Override
 		  public void onClick(View v)
 		   {
-			  Toast.makeText(context, "testing button " + id, Toast.LENGTH_SHORT).show();
-			  upvote(id);
+			  //XXX
+			  if(!voted){
+				  imgHolder.imgBtn.setImageResource(android.R.drawable.star_big_on);
+				  Toast.makeText(context, "testing button " + id, Toast.LENGTH_SHORT).show();
+				  upvote(id);
+			  }
 		   }
 		});
-		
 		return view;
 	}
 	
@@ -72,5 +89,7 @@ public class CustomList extends ArrayAdapter<String> {
 				Integer.toString(id));
 		Helper.sendAction(act, hubAddress + Constants.hubEndpoint,
 				context);
+		PhotoDB db = new PhotoDB(context);
+		db.setUpvotes(id);
 	}
 }
